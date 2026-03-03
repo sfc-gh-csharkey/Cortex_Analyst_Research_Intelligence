@@ -1,0 +1,355 @@
+name: research_intelligence
+description: Research Intelligence semantic view for analysts tracking recommendations, target prices, and rating changes across securities in capital markets.
+
+tables:
+  - name: RESEARCH_NOTES
+    description: Research notes and analyst reports containing recommendations, target prices, and rating changes for securities
+    base_table:
+      database: FSI_DEMO_DB
+      schema: CAPITAL_MARKETS
+      table: RESEARCH_NOTES
+    primary_key:
+      columns:
+        - NOTE_ID
+    dimensions:
+      - name: NOTE_ID
+        synonyms:
+          - research note id
+          - note identifier
+        description: Unique identifier for each research note
+        expr: NOTE_ID
+        data_type: TEXT
+      - name: SECURITY_ID
+        synonyms:
+          - security identifier
+          - stock id
+        description: Foreign key linking to the securities table
+        expr: SECURITY_ID
+        data_type: TEXT
+      - name: ANALYST_ID
+        synonyms:
+          - analyst identifier
+          - researcher id
+        description: Unique identifier for the analyst who wrote the note
+        expr: ANALYST_ID
+        data_type: TEXT
+      - name: ANALYST_NAME
+        synonyms:
+          - analyst
+          - researcher
+          - author
+        description: Name of the analyst who authored the research note
+        expr: ANALYST_NAME
+        data_type: TEXT
+      - name: REPORT_TYPE
+        synonyms:
+          - research type
+          - note type
+          - report category
+        description: Type of research report (EARNINGS_REVIEW, UPDATE, SECTOR_OVERVIEW, INITIATION, EARNINGS_PREVIEW)
+        expr: REPORT_TYPE
+        data_type: TEXT
+        sample_values:
+          - EARNINGS_REVIEW
+          - UPDATE
+          - SECTOR_OVERVIEW
+          - INITIATION
+          - EARNINGS_PREVIEW
+      - name: TITLE
+        synonyms:
+          - report title
+          - note title
+          - headline
+        description: Title of the research note
+        expr: TITLE
+        data_type: TEXT
+      - name: RECOMMENDATION
+        synonyms:
+          - rating
+          - analyst recommendation
+          - buy sell hold
+          - investment recommendation
+        description: Analyst recommendation for the security (BUY, HOLD, SELL, OVERWEIGHT, NEUTRAL)
+        expr: RECOMMENDATION
+        data_type: TEXT
+        sample_values:
+          - BUY
+          - HOLD
+          - OVERWEIGHT
+          - NEUTRAL
+      - name: RATING_CHANGE
+        synonyms:
+          - rating action
+          - upgrade downgrade
+          - recommendation change
+        description: Type of rating change if any (UPGRADE, DOWNGRADE, INITIATION)
+        expr: RATING_CHANGE
+        data_type: TEXT
+        sample_values:
+          - UPGRADE
+          - DOWNGRADE
+          - INITIATION
+    time_dimensions:
+      - name: PUBLISH_DATE
+        synonyms:
+          - publication date
+          - report date
+          - note date
+        description: Date when the research note was published
+        expr: PUBLISH_DATE
+        data_type: DATE
+      - name: CREATED_AT
+        synonyms:
+          - creation timestamp
+          - created date
+        description: Timestamp when the record was created
+        expr: CREATED_AT
+        data_type: TIMESTAMP
+    facts:
+      - name: TARGET_PRICE
+        synonyms:
+          - price target
+          - analyst target
+          - expected price
+        description: Analyst's target price for the security
+        expr: TARGET_PRICE
+        data_type: NUMBER
+      - name: PREVIOUS_TARGET
+        synonyms:
+          - prior target
+          - old target price
+          - previous price target
+        description: Previous target price before the current update
+        expr: PREVIOUS_TARGET
+        data_type: NUMBER
+    filters:
+      - name: BUY_RECOMMENDATIONS
+        synonyms:
+          - buy ratings
+          - positive recommendations
+        description: Filter for BUY recommendations only
+        expr: RECOMMENDATION = 'BUY'
+    metrics:
+      - name: TOTAL_RESEARCH_NOTES
+        synonyms:
+          - note count
+          - number of notes
+          - research count
+        description: Total count of research notes
+        expr: COUNT(NOTE_ID)
+      - name: AVG_TARGET_PRICE
+        synonyms:
+          - average target
+          - mean target price
+        description: Average target price across research notes
+        expr: AVG(TARGET_PRICE)
+      - name: TARGET_PRICE_CHANGE
+        synonyms:
+          - price target change
+          - target adjustment
+        description: Average change in target price from previous target
+        expr: AVG(TARGET_PRICE - PREVIOUS_TARGET)
+
+  - name: SECURITIES
+    description: Master securities reference data including stocks, bonds, and other financial instruments
+    base_table:
+      database: FSI_DEMO_DB
+      schema: CAPITAL_MARKETS
+      table: SECURITIES
+    primary_key:
+      columns:
+        - SECURITY_ID
+    dimensions:
+      - name: SECURITY_ID
+        synonyms:
+          - security identifier
+          - instrument id
+        description: Unique identifier for each security
+        expr: SECURITY_ID
+        data_type: TEXT
+      - name: TICKER
+        synonyms:
+          - stock symbol
+          - trading symbol
+          - symbol
+        description: Trading ticker symbol for the security
+        expr: TICKER
+        data_type: TEXT
+      - name: CUSIP
+        synonyms:
+          - cusip number
+        description: Committee on Uniform Securities Identification Procedures number
+        expr: CUSIP
+        data_type: TEXT
+      - name: ISIN
+        synonyms:
+          - isin code
+          - international security id
+        description: International Securities Identification Number
+        expr: ISIN
+        data_type: TEXT
+      - name: SECURITY_NAME
+        synonyms:
+          - company name
+          - instrument name
+          - stock name
+        description: Full name of the security or issuing company
+        expr: SECURITY_NAME
+        data_type: TEXT
+      - name: SECURITY_TYPE
+        synonyms:
+          - instrument type
+          - asset type
+        description: Type of security (STOCK, BOND, ETF, etc.)
+        expr: SECURITY_TYPE
+        data_type: TEXT
+      - name: ASSET_CLASS
+        synonyms:
+          - asset category
+          - investment class
+        description: Asset class classification (EQUITY, FIXED_INCOME, etc.)
+        expr: ASSET_CLASS
+        data_type: TEXT
+      - name: EXCHANGE
+        synonyms:
+          - stock exchange
+          - trading venue
+          - market
+        description: Exchange where the security is traded
+        expr: EXCHANGE
+        data_type: TEXT
+      - name: SECTOR
+        synonyms:
+          - industry sector
+          - business sector
+          - market sector
+        description: Business sector classification
+        expr: SECTOR
+        data_type: TEXT
+      - name: INDUSTRY
+        synonyms:
+          - industry group
+          - business industry
+        description: Specific industry within the sector
+        expr: INDUSTRY
+        data_type: TEXT
+      - name: COUNTRY
+        synonyms:
+          - country of origin
+          - domicile
+        description: Country where the security is domiciled
+        expr: COUNTRY
+        data_type: TEXT
+      - name: CURRENCY
+        synonyms:
+          - trading currency
+          - denomination
+        description: Currency in which the security is denominated
+        expr: CURRENCY
+        data_type: TEXT
+      - name: IS_ACTIVE
+        synonyms:
+          - active status
+          - trading status
+        description: Whether the security is currently active for trading
+        expr: IS_ACTIVE
+        data_type: BOOLEAN
+    time_dimensions:
+      - name: ISSUE_DATE
+        synonyms:
+          - issuance date
+          - listing date
+        description: Date when the security was issued
+        expr: ISSUE_DATE
+        data_type: DATE
+      - name: MATURITY_DATE
+        synonyms:
+          - maturity
+          - expiration date
+        description: Maturity date for fixed income securities
+        expr: MATURITY_DATE
+        data_type: DATE
+      - name: CREATED_AT
+        synonyms:
+          - creation timestamp
+        description: Timestamp when the record was created
+        expr: CREATED_AT
+        data_type: TIMESTAMP
+    facts:
+      - name: COUPON_RATE
+        synonyms:
+          - interest rate
+          - coupon
+        description: Coupon rate for fixed income securities
+        expr: COUPON_RATE
+        data_type: NUMBER
+      - name: PAR_VALUE
+        synonyms:
+          - face value
+          - nominal value
+        description: Par or face value of the security
+        expr: PAR_VALUE
+        data_type: NUMBER
+    metrics:
+      - name: TOTAL_SECURITIES
+        synonyms:
+          - security count
+          - number of securities
+        description: Total count of securities
+        expr: COUNT(SECURITY_ID)
+      - name: ACTIVE_SECURITIES
+        synonyms:
+          - active count
+        description: Count of active securities
+        expr: COUNT_IF(IS_ACTIVE = TRUE)
+
+relationships:
+  - name: RESEARCH_NOTES_TO_SECURITIES
+    left_table: RESEARCH_NOTES
+    right_table: SECURITIES
+    join_type: left_outer
+    relationship_type: many_to_one
+    relationship_columns:
+      - left_column: SECURITY_ID
+        right_column: SECURITY_ID
+
+verified_queries:
+  - name: notes_by_recommendation
+    question: How many research notes are there by recommendation?
+    sql: |
+      SELECT
+        RECOMMENDATION,
+        COUNT(*) AS NOTE_COUNT
+      FROM FSI_DEMO_DB.CAPITAL_MARKETS.RESEARCH_NOTES
+      GROUP BY RECOMMENDATION
+      ORDER BY NOTE_COUNT DESC
+  - name: avg_target_price_by_sector
+    question: What is the average target price by sector?
+    sql: |
+      SELECT
+        s.SECTOR,
+        AVG(rn.TARGET_PRICE) AS AVG_TARGET_PRICE,
+        COUNT(*) AS NOTE_COUNT
+      FROM FSI_DEMO_DB.CAPITAL_MARKETS.RESEARCH_NOTES rn
+      JOIN FSI_DEMO_DB.CAPITAL_MARKETS.SECURITIES s
+        ON rn.SECURITY_ID = s.SECURITY_ID
+      WHERE rn.TARGET_PRICE IS NOT NULL
+      GROUP BY s.SECTOR
+      ORDER BY AVG_TARGET_PRICE DESC
+  - name: recent_rating_changes
+    question: What are the recent rating changes?
+    sql: |
+      SELECT
+        rn.RATING_CHANGE,
+        s.TICKER,
+        s.SECURITY_NAME,
+        rn.ANALYST_NAME,
+        rn.PUBLISH_DATE,
+        rn.RECOMMENDATION,
+        rn.TARGET_PRICE
+      FROM FSI_DEMO_DB.CAPITAL_MARKETS.RESEARCH_NOTES rn
+      JOIN FSI_DEMO_DB.CAPITAL_MARKETS.SECURITIES s
+        ON rn.SECURITY_ID = s.SECURITY_ID
+      WHERE rn.RATING_CHANGE IS NOT NULL
+      ORDER BY rn.PUBLISH_DATE DESC
+      LIMIT 50
