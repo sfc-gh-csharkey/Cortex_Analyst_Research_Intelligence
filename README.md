@@ -1,5 +1,5 @@
 # Cortex Analyst Examples using synthetic Financial Services data
-<img width="85" alt="map-user" src="https://img.shields.io/badge/views-053-green"> <img width="125" alt="map-user" src="https://img.shields.io/badge/unique visits-000-green">
+<img width="85" alt="map-user" src="https://img.shields.io/badge/views-053-green"> <img width="125" alt="map-user" src="https://img.shields.io/badge/unique visits-003-green">
 
 Cortex Analyst is a service that provides text to SQL capabilities on your data. Using the analyst service, you model your data in a way that an LLM can best understand it. Specifically you build semantic views (previously semantic models).
 
